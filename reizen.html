@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reizen</title>
+    <title>Reizen - MS New Mexico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
@@ -137,6 +137,17 @@
             if(sectie.classList.contains('visible')) sectie.scrollIntoView({ behavior: 'smooth' });
         }
 
+        // Datum formatter hulpfunctie
+        function formatteerDatum(datumString) {
+            if(!datumString) return "-";
+            const d = new Date(datumString);
+            return d.toLocaleDateString('nl-NL', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
         async function laadDataVanCloud() {
             const jaar = document.getElementById('filter-jaar').value;
             const icon = document.getElementById('refresh-icon');
@@ -144,26 +155,29 @@
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'GET', redirect: 'follow' });
                 const data = await response.json();
+                
+                // Filteren op jaar
                 actueleData = data.filter(r => r.datum && r.datum.includes(jaar));
-                actueleData.sort((a, b) => b.nr - a.nr);
+                
+                // SORTEREN: Nieuwste datum bovenaan
+                actueleData.sort((a, b) => new Date(b.datum) - new Date(a.datum));
+                
                 renderLijst(actueleData);
                 updateStats(actueleData);
                 document.getElementById('sync-text').innerText = "Cloud Verbonden";
+                document.getElementById('stats-jaar').innerText = jaar;
             } catch (err) { console.error(err); } 
             finally { icon.classList.remove('loading-spinner'); }
         }
 
-        // VERBETERDE PDF EXPORT
         function maakPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
             const jaar = document.getElementById('filter-jaar').value;
             
-            // Kleuren definities
-            const primaryColor = [15, 23, 42]; // Navy
-            const accentColor = [37, 99, 235];  // Blue
+            const primaryColor = [15, 23, 42]; 
+            const accentColor = [37, 99, 235];
 
-            // 1. Header balk
             doc.setFillColor(...primaryColor);
             doc.rect(0, 0, 210, 45, 'F');
             
@@ -177,7 +191,6 @@
             doc.text("OFFICIEEL TRANSPORT OVERZICHT", 20, 28);
             doc.text(`Periode: Januari - December ${jaar}`, 20, 34);
 
-            // 2. Statistieken Boxjes (Grijze achtergrond)
             doc.setFillColor(245, 245, 245);
             doc.roundedRect(15, 50, 180, 25, 3, 3, 'F');
             
@@ -194,9 +207,9 @@
             doc.text(document.getElementById('stat-containers').innerText, 85, 68);
             doc.text(document.getElementById('stat-tonnage').innerText + " T", 150, 68);
 
-            // 3. De Tabel
+            // Tabel data met geformatteerde datums
             const tabelData = actueleData.map(r => [
-                r.datum, 
+                formatteerDatum(r.datum), 
                 r.nr, 
                 r.containers, 
                 parseFloat(r.tonnage).toLocaleString('nl-NL') + " T"
@@ -214,6 +227,7 @@
                     halign: 'center'
                 },
                 columnStyles: {
+                    0: { halign: 'left' },
                     2: { halign: 'right' },
                     3: { halign: 'right' }
                 },
@@ -221,7 +235,6 @@
                 margin: { left: 15, right: 15 }
             });
 
-            // 4. Footer
             const pageCount = doc.internal.getNumberOfPages();
             for(let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
@@ -235,8 +248,9 @@
         }
 
         async function stuurNaarCloud(nr, kisten, ton) {
+            // Gebruik ISO string voor opslag, wordt bij renderen geformatteerd
             const params = new URLSearchParams({
-                datum: new Date().toLocaleDateString('nl-NL'),
+                datum: new Date().toISOString(),
                 nr: nr, containers: kisten, tonnage: ton
             });
             try {
@@ -293,7 +307,7 @@
             const body = document.getElementById('reis-lijst-body');
             body.innerHTML = reizen.map(r => `
                 <tr class="hover:bg-white/[0.02] transition-colors">
-                    <td class="px-8 py-4 text-slate-500">${r.datum || '-'}</td>
+                    <td class="px-8 py-4 text-slate-500">${formatteerDatum(r.datum)}</td>
                     <td class="px-8 py-4 font-bold text-white">${r.nr}</td>
                     <td class="px-8 py-4 text-right font-bold text-blue-400">${r.containers}</td>
                     <td class="px-8 py-4 text-right font-bold text-emerald-500">${parseFloat(r.tonnage).toLocaleString('nl-NL')} T</td>
@@ -313,5 +327,3 @@
     </script>
 </body>
 </html>
-
-
