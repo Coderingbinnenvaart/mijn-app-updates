@@ -13,7 +13,6 @@
             --bg-dark: #0f172a;
             --card-bg: rgba(30, 41, 59, 0.7);
             --accent-blue: #38bdf8;
-            --accent-teal: #2dd4bf;
             --text-primary: #f1f5f9;
             --border-ui: rgba(255, 255, 255, 0.1);
         }
@@ -23,17 +22,7 @@
             background-color: var(--bg-dark);
             background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
             color: var(--text-primary);
-            transition: all 0.3s ease;
-        }
-
-        body.light-mode {
-            --bg-dark: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --accent-blue: #0284c7;
-            --accent-teal: #0d9488;
-            --text-primary: #1e293b;
-            --border-ui: rgba(0, 0, 0, 0.05);
-            background-image: radial-gradient(circle at 50% 0%, #f1f5f9 0%, #f8fafc 100%);
+            min-height: 100vh;
         }
 
         .glass-panel {
@@ -41,7 +30,6 @@
             backdrop-filter: blur(12px);
             border: 1px solid var(--border-ui);
             border-radius: 1rem;
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
         }
 
         .navbar {
@@ -52,32 +40,24 @@
         }
 
         .waterstand-item {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             border-left: 4px solid transparent;
         }
 
-        .waterstand-item.active {
-            background: rgba(56, 189, 248, 0.15);
-            border-left-color: var(--accent-blue);
-            transform: translateX(4px);
-        }
+        .waterstand-item:hover { background: rgba(255,255,255,0.05); }
 
         .bridge-card {
             transition: all 0.2s ease;
             border: 1px solid var(--border-ui);
         }
 
-        .bridge-card:hover {
-            border-color: var(--accent-blue);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
         .marge-badge {
             padding: 4px 12px;
             border-radius: 20px;
             font-weight: 700;
-            min-width: 80px;
+            min-width: 90px;
             text-align: center;
+            font-size: 0.875rem;
         }
 
         .status-ok { background: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
@@ -85,96 +65,70 @@
         .status-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
         input[type="number"] {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-ui);
-            color: var(--text-primary);
+            color: white;
+            border-radius: 0.5rem;
             outline: none;
-            transition: border-color 0.2s;
-        }
-
-        body.light-mode input[type="number"] {
-            background: #fff;
-        }
-
-        input[type="number"]:focus {
-            border-color: var(--accent-blue);
         }
 
         .section-title {
             position: relative;
             padding-left: 1rem;
+            border-left: 4px solid var(--accent-blue);
         }
 
-        .section-title::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 4px;
-            background: var(--accent-blue);
-            border-radius: 4px;
-        }
-
-        #menu-panel.active {
-            display: block;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        #menu-panel.active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="min-h-screen pt-24 pb-12 px-4 md:px-8">
+<body class="pt-24 pb-12 px-4">
 
     <header class="navbar fixed top-0 left-0 w-full flex items-center justify-between px-8 z-[1000]">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center font-bold text-white">B</div>
+            <div class="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-sky-500/20">B</div>
             <h1 class="text-xl font-bold tracking-tight">BRUGHOGTE<span class="text-sky-500">MONITOR</span></h1>
         </div>
-        <button id="menu-toggle" class="p-2 hover:bg-white/10 rounded-lg transition-colors">
-            <svg class="w-6 h-6 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        <button id="menu-toggle" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-sky-500">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
         </button>
     </header>
 
-    <nav id="menu-panel" class="fixed top-20 right-8 w-64 glass-panel hidden z-[999] p-4">
+    <nav id="menu-panel" class="fixed top-20 right-8 w-64 glass-panel hidden z-[999] p-4 shadow-2xl">
         <div class="grid grid-cols-1 gap-2">
-            <a href="index.html" class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-lg transition-colors">🏠 Dashboard</a>
-            <a href="waterstanden.html" class="flex items-center gap-3 p-3 bg-teal-500/20 text-teal-400 rounded-lg">🌉 Brughoogte</a>
-            <a href="reizen.html" class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-lg">🧭 Reizen</a>
-            <hr class="border-white/10 my-2">
-            <button id="mode-toggle-link" class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-lg w-full text-left">🌓 Modus Schakelen</button>
+            <a href="index.html" class="p-3 hover:bg-white/5 rounded-lg transition-colors">🏠 Dashboard</a>
+            <a href="waterstanden.html" class="p-3 bg-sky-500/20 text-sky-400 rounded-lg font-bold">🌉 Brughoogte</a>
+            <a href="reizen.html" class="p-3 hover:bg-white/5 rounded-lg">🧭 Reizen</a>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <div class="lg:col-span-9 space-y-12">
-            
+        <div class="lg:col-span-9 space-y-10">
             <section>
-                <h2 class="section-title text-2xl font-extrabold mb-6 tracking-tight">DUITSLAND <span class="text-white/40 font-medium">(RHEIN)</span></h2>
+                <h2 class="section-title text-2xl font-extrabold mb-6">DUITSLAND <span class="text-white/30 font-medium">RHEIN</span></h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-1 glass-panel p-5">
-                        <h3 class="text-xs font-bold text-teal-500 uppercase tracking-widest mb-4">Waterstanden (cm)</h3>
-                        <div id="waterstand-list-de" class="space-y-3"></div>
+                    <div class="glass-panel p-5">
+                        <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Pegel (cm)</h3>
+                        <div id="ws-de" class="space-y-2"></div>
                     </div>
                     <div class="md:col-span-2 glass-panel p-5">
-                        <h3 class="text-xs font-bold text-teal-500 uppercase tracking-widest mb-4">Overzicht Bruggen</h3>
-                        <div id="bridge-list-de" class="grid grid-cols-1 gap-3"></div>
+                        <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Bruggen</h3>
+                        <div id="br-de" class="space-y-3"></div>
                     </div>
                 </div>
             </section>
 
             <section>
-                <h2 class="section-title text-2xl font-extrabold mb-6 tracking-tight">NEDERLANDSE BRUGGEN</h2>
+                <h2 class="section-title text-2xl font-extrabold mb-6">NEDERLAND <span class="text-white/30 font-medium">BINNENVAART</span></h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-1 glass-panel p-5">
-                        <h3 class="text-xs font-bold text-teal-500 uppercase tracking-widest mb-4">Waterstanden (cm)</h3>
-                        <div id="waterstand-list-nl" class="space-y-3"></div>
+                    <div class="glass-panel p-5">
+                        <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Waterstanden (cm)</h3>
+                        <div id="ws-nl" class="space-y-2"></div>
                     </div>
                     <div class="md:col-span-2 glass-panel p-5">
-                        <h3 class="text-xs font-bold text-teal-500 uppercase tracking-widest mb-4">Overzicht Bruggen</h3>
-                        <div id="bridge-list-nl" class="grid grid-cols-1 gap-3"></div>
+                        <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Bruggen</h3>
+                        <div id="br-nl" class="space-y-3"></div>
                     </div>
                 </div>
             </section>
@@ -182,171 +136,153 @@
 
         <aside class="lg:col-span-3 space-y-6">
             <div class="glass-panel p-6 sticky top-24">
-                <h3 class="text-sm font-bold text-teal-500 uppercase tracking-widest mb-4">Instellingen</h3>
-                <div class="mb-6">
-                    <label class="block text-xs text-white/60 mb-2 uppercase">Max. Scheepshoogte</label>
-                    <div class="relative">
-                        <input type="number" id="ship-height-global" step="0.01" class="w-full text-2xl font-bold p-3 rounded-xl text-center">
-                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 font-bold">M</span>
-                    </div>
-                </div>
-                <img src="scheeps hoogte.jpg" alt="Profiel" class="w-full rounded-lg opacity-80 hover:opacity-100 transition-opacity">
+                <label class="block text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-3">Scheepshoogte (m)</label>
+                <input type="number" id="ship-height" step="0.01" class="w-full text-3xl font-black p-4 text-center mb-6">
                 
-                <div class="mt-8">
-                    <h3 class="text-xs font-bold text-red-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                        </span>
-                        Marke Alarmen
+                <div class="space-y-4">
+                    <h3 class="text-[10px] font-bold text-red-500 uppercase tracking-widest flex items-center gap-2">
+                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Marke Alarmen
                     </h3>
-                    <ul id="marke-alarm-list" class="space-y-3"></ul>
+                    <div id="alarms" class="text-xs space-y-2"></div>
                 </div>
             </div>
         </aside>
     </main>
 
     <script>
-        // ... (Kopieer de volledige <script> sectie uit je originele bestand hieronder) ...
-        // Let op: Pas de render functies iets aan voor de nieuwe classes:
-        
-        // RenderWaterstandList aanpassing snippet:
-        // waterstandElement.className = `waterstand-item flex justify-between items-center p-3 rounded-xl glass-panel hover:bg-white/5 cursor-pointer transition-all`;
-        
-        // RenderBridgeList aanpassing snippet:
-        // bridgeElement.className = `bridge-card flex items-center justify-between p-4 rounded-xl bg-white/5`;
-        // ... (Rest van je originele JS logica blijft werken)
-    </script>
-    
-    <script>
-        // Dezelfde variabelen als voorheen
-        const menuToggle = document.getElementById('menu-toggle');
-        const menuPanel = document.getElementById('menu-panel');
-        const modeToggleLink = document.getElementById('mode-toggle-link');
-        const body = document.body;
+        // DATA
+        const wsDE = [
+            { id: 'dus', name: 'Dusseldorf', currentLevel: 3.50, markeI: 710, markeII: 880 },
+            { id: 'rur', name: 'Ruhrort', currentLevel: 4.20, markeI: 930, markeII: 1130 },
+            { id: 'wes', name: 'Wesel', currentLevel: 3.80, markeI: 870, markeII: 1060 },
+            { id: 'emm', name: 'Emmerich', currentLevel: 3.10, markeI: 700, markeII: 870 }
+        ];
 
-        // Toggle menu
-        menuToggle.addEventListener('click', () => menuPanel.classList.toggle('hidden'));
+        const brDE = [
+            { id: 'neuss', name: 'Neuss-Hamm Br.', refDvh: 17.41, loc: 'dus' },
+            { id: 'knie', name: 'Kniebrucke (Duss.)', refDvh: 17.62, loc: 'dus' },
+            { id: 'krefeld', name: 'Krefeld', refDvh: 20.18, loc: 'rur' },
+            { id: 'vinc', name: 'Vincke kanaal', refDvh: 17.08, loc: 'rur' },
+            { id: 'ruhr', name: 'Ruhr', refDvh: 20.18, loc: 'rur' },
+            { id: 'wesel', name: 'Wesel', refDvh: 19.70, loc: 'wes' },
+            { id: 'rees', name: 'Rees', refDvh: 17.80, loc: 'emm' },
+            { id: 'emme', name: 'Emmerich', refDvh: 17.80, loc: 'emm' }
+        ];
 
-        // Mode switch
-        modeToggleLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            body.classList.toggle('light-mode');
-        });
+        const wsNL = [
+            { id: 'nij', name: 'Nijmegen', currentLevel: 6.50 },
+            { id: 'tiel', name: 'Tiel', currentLevel: 4.20 },
+            { id: 'zalt', name: 'Zaltbommel', currentLevel: 3.10 },
+            { id: 'wer', name: 'Werkendam', currentLevel: 1.50 },
+            { id: 'dor', name: 'Dordrecht', currentLevel: 1.10 },
+            { id: 'rot', name: 'Rotterdam', currentLevel: 0.80 },
+            { id: 'spijk', name: 'Spijkenisse', currentLevel: 0.90 },
+            { id: 'hoek', name: 'Hoek v. Holland', currentLevel: 0.50 }
+        ];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const shipHeightInputGlobal = document.getElementById('ship-height-global');
-            const waterstandListDE = document.getElementById('waterstand-list-de');
-            const bridgeListPanelDE = document.getElementById('bridge-list-de');
-            const waterstandListNL = document.getElementById('waterstand-list-nl');
-            const bridgeListPanelNL = document.getElementById('bridge-list-nl');
+        const brNL = [
+            { id: 'waal', name: 'Nijmegen', refDvh: 22.80, loc: 'nij' },
+            { id: 'ewijk', name: 'Ewijk', refDvh: 23.20, loc: 'nij' },
+            { id: 'tielbr', name: 'Tiel', refDvh: 19.60, loc: 'tiel' },
+            { id: 'zaltb', name: 'Zaltbommel', refDvh: 17.40, loc: 'zalt' },
+            { id: 'gorin', name: 'Gorinchem', refDvh: 13.33, loc: 'wer' },
+            { id: 'baan', name: 'Baanhoek', refDvh: 12.90, loc: 'dor' },
+            { id: 'papen', name: 'Papendrecht', refDvh: 13.00, loc: 'dor' },
+            { id: 'dord', name: 'Dordrecht', refDvh: 11.35, loc: 'dor' },
+            { id: 'spijkb', name: 'Spijkenissebrug', refDvh: 12.50, loc: 'spijk' },
+            { id: 'botlek', name: 'Botlekbrug', refDvh: 14.00, loc: 'spijk' },
+            { id: 'hams', name: 'Hamsenbrug', refDvh: 11.45, loc: 'hoek' },
+            { id: 'suur', name: 'Suurhuffbrug', refDvh: 11.50, loc: 'hoek' },
+            { id: 'will', name: 'Willemsbrug', refDvh: 11.50, loc: 'rot' },
+            { id: 'eras', name: 'Erasmusbrug', refDvh: 12.50, loc: 'rot' }
+        ];
 
-            let maxShipHeight = 4.00; 
-            shipHeightInputGlobal.value = maxShipHeight;
-
-            // Data (Zelfde als jouw bron)
-            let waterstandDataDE = [
-                { id: 'dus', name: 'Dusseldorf', level: 0, ref: 0.00, currentLevel: 3.50, listId: 'de', markeI_cm: 710, markeII_cm: 880 },
-                { id: 'rur', name: 'Ruhrort', level: 0, ref: 0.00, currentLevel: 4.20, listId: 'de', markeI_cm: 930, markeII_cm: 1130 },
-                { id: 'wes', name: 'Wesel', level: 0, ref: 0.00, currentLevel: 3.80, listId: 'de', markeI_cm: 870, markeII_cm: 1060 },
-                { id: 'emm', name: 'Emmerich', level: 0.00, ref: 0.00, currentLevel: 3.10, listId: 'de', markeI_cm: 700, markeII_cm: 870 } 
-            ];
+        // LOGIC
+        function init() {
+            renderWS(wsDE, 'ws-de');
+            renderWS(wsNL, 'ws-nl');
+            renderBR(brDE, wsDE, 'br-de');
+            renderBR(brNL, wsNL, 'br-nl');
             
-            let allBridgeDataDE = [
-                { id: 'neuss', name: 'Neuss-Hamm Br.', refDvh: 17.41, refWaterLevel: 0.00, locationId: 'dus', listId: 'de' },
-                { id: 'knie', name: 'Kniebrucke (Duss.)', refDvh: 17.62, refWaterLevel: 0.00, locationId: 'dus', listId: 'de' },
-                { id: 'krefeld', name: 'Krefeld', refDvh: 20.18, refWaterLevel: 0.00, locationId: 'rur', listId: 'de' },
-                { id: 'vinc', name: 'Vincke kanaal', refDvh: 17.08, refWaterLevel: 0.00, locationId: 'rur', listId: 'de' },
-                { id: 'wesel', name: 'Wesel', refDvh: 19.70, refWaterLevel: 0.00, locationId: 'wes', listId: 'de' },
-                { id: 'emme', name: 'Emmerich', refDvh: 17.80, refWaterLevel: 0.00, locationId: 'emm', listId: 'de' } 
-            ];
+            const savedHeight = localStorage.getItem('shipHeight') || 4.00;
+            document.getElementById('ship-height').value = savedHeight;
+            
+            update();
+        }
 
-            let waterstandDataNL = [
-                { id: 'nij', name: 'Nijmegen', level: 0.00, ref: 0.00, currentLevel: 6.50, listId: 'nl' }, 
-                { id: 'dor', name: 'Dordrecht', level: 0, ref: 0.00, currentLevel: 1.10, listId: 'nl' }
-            ];
+        function renderWS(data, targetId) {
+            const container = document.getElementById(targetId);
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'waterstand-item flex items-center justify-between p-2 rounded-lg';
+                div.innerHTML = `
+                    <span class="text-xs font-medium">${item.name}</span>
+                    <input type="number" value="${(item.currentLevel * 100).toFixed(0)}" 
+                           class="w-16 p-1 text-right text-xs font-bold" 
+                           oninput="updateWS('${item.id}', this.value)">
+                `;
+                container.appendChild(div);
+            });
+        }
 
-            let allBridgeDataNL = [
-                { id: 'waal', name: 'Nijmegen', refDvh: 22.80, refWaterLevel: 0.00, locationId: 'nij', listId: 'nl' }, 
-                { id: 'dordre', name: 'Dordrecht', refDvh: 11.35, refWaterLevel: 0.00, locationId: 'dor', listId: 'nl' }
-            ];
-
-            function renderWaterstandList(dataArray, targetElement) {
-                targetElement.innerHTML = '';
-                dataArray.forEach(data => {
-                    const div = document.createElement('div');
-                    div.className = `waterstand-item flex items-center justify-between p-3 rounded-lg bg-black/10 hover:bg-black/20 cursor-pointer`;
-                    div.innerHTML = `
-                        <span class="text-sm font-semibold">${data.name}</span>
-                        <input type="number" value="${(data.currentLevel * 100).toFixed(0)}" 
-                               class="w-16 p-1 text-right text-xs rounded font-bold">
-                    `;
-                    div.onclick = () => {
-                        document.querySelectorAll('.waterstand-item').forEach(el => el.classList.remove('active'));
-                        div.classList.add('active');
-                    };
-                    const input = div.querySelector('input');
-                    input.oninput = (e) => {
-                        data.currentLevel = e.target.value / 100;
-                        updateAll();
-                    };
-                    targetElement.appendChild(div);
-                });
-            }
-
-            function renderBridgeList(bridgeArray, wsArray, targetElement) {
-                targetElement.innerHTML = '';
-                bridgeArray.forEach(bridge => {
-                    const ws = wsArray.find(w => w.id === bridge.locationId);
-                    const div = document.createElement('div');
-                    div.className = `bridge-card flex items-center justify-between p-4 rounded-xl bg-white/5`;
-                    div.innerHTML = `
-                        <div>
-                            <h4 class="font-bold text-sm">${bridge.name}</h4>
-                            <p class="text-[10px] text-white/40 uppercase tracking-tighter">${ws.name}</p>
+        function renderBR(bridges, wstand, targetId) {
+            const container = document.getElementById(targetId);
+            bridges.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'bridge-card glass-panel p-4 flex items-center justify-between';
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-sm">${b.name}</h4>
+                        <p class="text-[9px] text-white/40 uppercase tracking-widest">${wstand.find(w=>w.id===b.loc).name}</p>
+                    </div>
+                    <div class="flex gap-6">
+                        <div class="text-right">
+                            <span class="block text-[9px] text-white/40 uppercase">Doorvaart</span>
+                            <span id="dvh-${b.id}" class="font-bold text-sm">--</span>
                         </div>
-                        <div class="flex gap-8 items-center">
-                            <div class="text-right">
-                                <p class="text-[10px] text-white/40 uppercase">Doorvaart</p>
-                                <p class="font-black text-lg" id="dvh-${bridge.id}">--</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[10px] text-white/40 uppercase">Marge</p>
-                                <div class="marge-badge" id="marge-${bridge.id}">--</div>
-                            </div>
-                        </div>
-                    `;
-                    targetElement.appendChild(div);
-                });
-            }
+                        <div id="marge-${b.id}" class="marge-badge status-ok">--</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
 
-            function updateAll() {
-                maxShipHeight = parseFloat(shipHeightInputGlobal.value);
+        function updateWS(id, val) {
+            const item = [...wsDE, ...wsNL].find(w => w.id === id);
+            if(item) item.currentLevel = val / 100;
+            update();
+        }
+
+        function update() {
+            const shipHeight = parseFloat(document.getElementById('ship-height').value);
+            localStorage.setItem('shipHeight', shipHeight);
+            const alarms = [];
+
+            [...brDE, ...brNL].forEach(b => {
+                const ws = [...wsDE, ...wsNL].find(w => w.id === b.loc);
+                const dvh = b.refDvh - ws.currentLevel;
+                const marge = dvh - shipHeight;
+
+                document.getElementById(`dvh-${b.id}`).innerText = dvh.toFixed(2) + 'm';
+                const mBadge = document.getElementById(`marge-${b.id}`);
+                mBadge.innerText = marge.toFixed(2) + 'm';
                 
-                [...allBridgeDataDE, ...allBridgeDataNL].forEach(bridge => {
-                    const wsData = [...waterstandDataDE, ...waterstandDataNL].find(w => w.id === bridge.locationId);
-                    const currentDvh = bridge.refDvh - (wsData.currentLevel - bridge.refWaterLevel);
-                    const marge = currentDvh - maxShipHeight;
+                mBadge.className = 'marge-badge ' + (marge < 0 ? 'status-danger' : marge < 0.5 ? 'status-warn' : 'status-ok');
+            });
 
-                    const dvhEl = document.getElementById(`dvh-${bridge.id}`);
-                    const margeEl = document.getElementById(`marge-${bridge.id}`);
+            // Marke Alarms (Duitsland)
+            wsDE.forEach(w => {
+                const levelCm = w.currentLevel * 100;
+                if(levelCm >= w.markeII) alarms.push(`<div class="p-2 bg-red-500/20 text-red-400 rounded">🚨 ${w.name}: MARKE II!</div>`);
+                else if(levelCm >= w.markeI) alarms.push(`<div class="p-2 bg-orange-500/20 text-orange-400 rounded">⚠️ ${w.name}: MARKE I</div>`);
+            });
+            document.getElementById('alarms').innerHTML = alarms.length ? alarms.join('') : '<p class="text-white/20 italic text-center">Geen alarmen</p>';
+        }
 
-                    if(dvhEl) dvhEl.innerText = currentDvh.toFixed(2) + ' m';
-                    if(margeEl) {
-                        margeEl.innerText = marge.toFixed(2) + ' m';
-                        margeEl.className = 'marge-badge ' + (marge < 0 ? 'status-danger' : marge < 0.5 ? 'status-warn' : 'status-ok');
-                    }
-                });
-            }
+        document.getElementById('ship-height').oninput = update;
+        document.getElementById('menu-toggle').onclick = () => document.getElementById('menu-panel').classList.toggle('hidden');
 
-            renderWaterstandList(waterstandDataDE, waterstandListDE);
-            renderBridgeList(allBridgeDataDE, waterstandDataDE, bridgeListPanelDE);
-            renderWaterstandList(waterstandDataNL, waterstandListNL);
-            renderBridgeList(allBridgeDataNL, waterstandDataNL, bridgeListPanelNL);
-            
-            shipHeightInputGlobal.oninput = updateAll;
-            updateAll();
-        });
+        init();
     </script>
 </body>
 </html>
