@@ -5,284 +5,249 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brughoogte Monitor Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent-blue: #38bdf8;
-            --text-primary: #f1f5f9;
-            --border-ui: rgba(255, 255, 255, 0.1);
-        }
-
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-dark);
+            background-color: #0f172a;
             background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
-            color: var(--text-primary);
+            color: #f1f5f9;
             min-height: 100vh;
         }
-
         .glass-panel {
-            background: var(--card-bg);
+            background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid var(--border-ui);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 1rem;
         }
-
-        .navbar {
-            height: 70px;
-            backdrop-filter: blur(20px);
-            background: rgba(15, 23, 42, 0.8);
-            border-bottom: 1px solid var(--border-ui);
+        .status-ok { background: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
+        .status-warn { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .status-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        
+        input[type="number"] {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 0.5rem;
+            outline: none;
+            padding: 4px 8px;
         }
-
-        .waterstand-item {
-            transition: all 0.2s ease;
-            border-left: 4px solid transparent;
-        }
-
-        .waterstand-item:hover { background: rgba(255,255,255,0.05); }
-
-        .bridge-card {
-            transition: all 0.2s ease;
-            border: 1px solid var(--border-ui);
-        }
-
+        input:focus { border-color: #38bdf8; }
+        
         .marge-badge {
             padding: 4px 12px;
             border-radius: 20px;
             font-weight: 700;
             min-width: 90px;
             text-align: center;
-            font-size: 0.875rem;
         }
-
-        .status-ok { background: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
-        .status-warn { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .status-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-
-        input[type="number"] {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-ui);
-            color: white;
-            border-radius: 0.5rem;
-            outline: none;
-        }
-
-        .section-title {
-            position: relative;
-            padding-left: 1rem;
-            border-left: 4px solid var(--accent-blue);
-        }
-
-        #menu-panel.active { display: block; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="pt-24 pb-12 px-4">
+<body class="py-12 px-4">
 
-    <header class="navbar fixed top-0 left-0 w-full flex items-center justify-between px-8 z-[1000]">
+    <div class="max-w-7xl mx-auto mb-10 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-sky-500 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-sky-500/20">B</div>
-            <h1 class="text-xl font-bold tracking-tight">BRUGHOGTE<span class="text-sky-500">MONITOR</span></h1>
+            <div class="w-10 h-10 bg-sky-500 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-sky-500/20">B</div>
+            <h1 class="text-2xl font-black tracking-tight">BRUGHOGTE<span class="text-sky-500">MONITOR</span></h1>
         </div>
-        <button id="menu-toggle" class="p-2 hover:bg-white/10 rounded-lg transition-colors text-sky-500">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-        </button>
-    </header>
-
-    <nav id="menu-panel" class="fixed top-20 right-8 w-64 glass-panel hidden z-[999] p-4 shadow-2xl">
-        <div class="grid grid-cols-1 gap-2">
-            <a href="index.html" class="p-3 hover:bg-white/5 rounded-lg transition-colors">🏠 Dashboard</a>
-            <a href="waterstanden.html" class="p-3 bg-sky-500/20 text-sky-400 rounded-lg font-bold">🌉 Brughoogte</a>
-            <a href="reizen.html" class="p-3 hover:bg-white/5 rounded-lg">🧭 Reizen</a>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <div class="lg:col-span-9 space-y-10">
-            <section>
-                <h2 class="section-title text-2xl font-extrabold mb-6">DUITSLAND <span class="text-white/30 font-medium">RHEIN</span></h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-panel p-5">
-                        <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Pegel (cm)</h3>
-                        <div id="ws-de" class="space-y-2"></div>
-                    </div>
-                    <div class="md:col-span-2 glass-panel p-5">
-                        <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Bruggen</h3>
-                        <div id="br-de" class="space-y-3"></div>
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <h2 class="section-title text-2xl font-extrabold mb-6">NEDERLAND <span class="text-white/30 font-medium">BINNENVAART</span></h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-panel p-5">
-                        <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Waterstanden (cm)</h3>
-                        <div id="ws-nl" class="space-y-2"></div>
-                    </div>
-                    <div class="md:col-span-2 glass-panel p-5">
-                        <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Bruggen</h3>
-                        <div id="br-nl" class="space-y-3"></div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <aside class="lg:col-span-3 space-y-6">
-            <div class="glass-panel p-6 sticky top-24">
-                <label class="block text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-3">Scheepshoogte (m)</label>
-                <input type="number" id="ship-height" step="0.01" class="w-full text-3xl font-black p-4 text-center mb-6">
-                
-                <div class="space-y-4">
-                    <h3 class="text-[10px] font-bold text-red-500 uppercase tracking-widest flex items-center gap-2">
-                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Marke Alarmen
-                    </h3>
-                    <div id="alarms" class="text-xs space-y-2"></div>
-                </div>
+        <div class="glass-panel px-6 py-3 flex items-center gap-4">
+            <span class="text-xs font-bold text-sky-400 uppercase">Scheepshoogte</span>
+            <div class="flex items-center gap-2">
+                <input type="number" id="global-ship-height" step="0.01" class="w-20 text-center font-bold text-lg">
+                <span class="text-white/50 font-bold">m</span>
             </div>
-        </aside>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto space-y-12">
+        
+        <section>
+            <div class="flex items-center gap-4 mb-6">
+                <h2 class="text-xl font-extrabold tracking-wider text-white/90">DUITSLAND</h2>
+                <div class="h-[1px] flex-grow bg-white/10"></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="glass-panel p-5">
+                    <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Pegel (cm)</h3>
+                    <div id="ws-list-de" class="space-y-3"></div>
+                </div>
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" id="br-list-de"></div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex items-center gap-4 mb-6">
+                <h2 class="text-xl font-extrabold tracking-wider text-white/90">NEDERLAND</h2>
+                <div class="h-[1px] flex-grow bg-white/10"></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="glass-panel p-5">
+                    <h3 class="text-[10px] font-bold text-sky-400 uppercase tracking-widest mb-4">Waterstand (cm)</h3>
+                    <div id="ws-list-nl" class="space-y-3"></div>
+                </div>
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" id="br-list-nl"></div>
+            </div>
+        </section>
+
+        <div id="alarm-container" class="max-w-2xl mx-auto"></div>
+
     </main>
 
     <script>
         // DATA
-        const wsDE = [
-            { id: 'dus', name: 'Dusseldorf', currentLevel: 3.50, markeI: 710, markeII: 880 },
-            { id: 'rur', name: 'Ruhrort', currentLevel: 4.20, markeI: 930, markeII: 1130 },
-            { id: 'wes', name: 'Wesel', currentLevel: 3.80, markeI: 870, markeII: 1060 },
-            { id: 'emm', name: 'Emmerich', currentLevel: 3.10, markeI: 700, markeII: 870 }
-        ];
+        const data = {
+            de: {
+                ws: [
+                    { id: 'dus', name: 'Dusseldorf', val: 350, m1: 710, m2: 880 },
+                    { id: 'rur', name: 'Ruhrort', val: 420, m1: 930, m2: 1130 },
+                    { id: 'wes', name: 'Wesel', val: 380, m1: 870, m2: 1060 },
+                    { id: 'emm', name: 'Emmerich', val: 310, m1: 700, m2: 870 }
+                ],
+                br: [
+                    { id: 'neuss', name: 'Neuss-Hamm Br.', ref: 17.41, loc: 'dus' },
+                    { id: 'knie', name: 'Kniebrucke (Duss.)', ref: 17.62, loc: 'dus' },
+                    { id: 'krefeld', name: 'Krefeld', ref: 20.18, loc: 'rur' },
+                    { id: 'vinc', name: 'Vincke kanaal', ref: 17.08, loc: 'rur' },
+                    { id: 'ruhr', name: 'Ruhr', ref: 20.18, loc: 'rur' },
+                    { id: 'wesel', name: 'Wesel', ref: 19.70, loc: 'wes' },
+                    { id: 'rees', name: 'Rees', ref: 17.80, loc: 'emm' },
+                    { id: 'emme', name: 'Emmerich', ref: 17.80, loc: 'emm' }
+                ]
+            },
+            nl: {
+                ws: [
+                    { id: 'nij', name: 'Nijmegen', val: 650 },
+                    { id: 'tiel', name: 'Tiel', val: 420 },
+                    { id: 'zalt', name: 'Zaltbommel', val: 310 },
+                    { id: 'wer', name: 'Werkendam', val: 150 },
+                    { id: 'dor', name: 'Dordrecht', val: 110 },
+                    { id: 'rot', name: 'Rotterdam', val: 80 },
+                    { id: 'spijk', name: 'Spijkenisse', val: 90 },
+                    { id: 'hoek', name: 'Hoek v. Holland', val: 50 }
+                ],
+                br: [
+                    { id: 'waal', name: 'Nijmegen', ref: 22.80, loc: 'nij' },
+                    { id: 'ewijk', name: 'Ewijk', ref: 23.20, loc: 'nij' },
+                    { id: 'tielbr', name: 'Tiel', ref: 19.60, loc: 'tiel' },
+                    { id: 'zaltb', name: 'Zaltbommel', ref: 17.40, loc: 'zalt' },
+                    { id: 'gorin', name: 'Gorinchem', ref: 13.33, loc: 'wer' },
+                    { id: 'baan', name: 'Baanhoek', ref: 12.90, loc: 'dor' },
+                    { id: 'papen', name: 'Papendrecht', ref: 13.00, loc: 'dor' },
+                    { id: 'dord', name: 'Dordrecht', ref: 11.35, loc: 'dor' },
+                    { id: 'spijkb', name: 'Spijkenissebrug', ref: 12.50, loc: 'spijk' },
+                    { id: 'botlek', name: 'Botlekbrug', ref: 14.00, loc: 'spijk' },
+                    { id: 'hams', name: 'Hamsenbrug', ref: 11.45, loc: 'hoek' },
+                    { id: 'suur', name: 'Suurhuffbrug', ref: 11.50, loc: 'hoek' },
+                    { id: 'will', name: 'Willemsbrug', ref: 11.50, loc: 'rot' },
+                    { id: 'eras', name: 'Erasmusbrug', ref: 12.50, loc: 'rot' }
+                ]
+            }
+        };
 
-        const brDE = [
-            { id: 'neuss', name: 'Neuss-Hamm Br.', refDvh: 17.41, loc: 'dus' },
-            { id: 'knie', name: 'Kniebrucke (Duss.)', refDvh: 17.62, loc: 'dus' },
-            { id: 'krefeld', name: 'Krefeld', refDvh: 20.18, loc: 'rur' },
-            { id: 'vinc', name: 'Vincke kanaal', refDvh: 17.08, loc: 'rur' },
-            { id: 'ruhr', name: 'Ruhr', refDvh: 20.18, loc: 'rur' },
-            { id: 'wesel', name: 'Wesel', refDvh: 19.70, loc: 'wes' },
-            { id: 'rees', name: 'Rees', refDvh: 17.80, loc: 'emm' },
-            { id: 'emme', name: 'Emmerich', refDvh: 17.80, loc: 'emm' }
-        ];
-
-        const wsNL = [
-            { id: 'nij', name: 'Nijmegen', currentLevel: 6.50 },
-            { id: 'tiel', name: 'Tiel', currentLevel: 4.20 },
-            { id: 'zalt', name: 'Zaltbommel', currentLevel: 3.10 },
-            { id: 'wer', name: 'Werkendam', currentLevel: 1.50 },
-            { id: 'dor', name: 'Dordrecht', currentLevel: 1.10 },
-            { id: 'rot', name: 'Rotterdam', currentLevel: 0.80 },
-            { id: 'spijk', name: 'Spijkenisse', currentLevel: 0.90 },
-            { id: 'hoek', name: 'Hoek v. Holland', currentLevel: 0.50 }
-        ];
-
-        const brNL = [
-            { id: 'waal', name: 'Nijmegen', refDvh: 22.80, loc: 'nij' },
-            { id: 'ewijk', name: 'Ewijk', refDvh: 23.20, loc: 'nij' },
-            { id: 'tielbr', name: 'Tiel', refDvh: 19.60, loc: 'tiel' },
-            { id: 'zaltb', name: 'Zaltbommel', refDvh: 17.40, loc: 'zalt' },
-            { id: 'gorin', name: 'Gorinchem', refDvh: 13.33, loc: 'wer' },
-            { id: 'baan', name: 'Baanhoek', refDvh: 12.90, loc: 'dor' },
-            { id: 'papen', name: 'Papendrecht', refDvh: 13.00, loc: 'dor' },
-            { id: 'dord', name: 'Dordrecht', refDvh: 11.35, loc: 'dor' },
-            { id: 'spijkb', name: 'Spijkenissebrug', refDvh: 12.50, loc: 'spijk' },
-            { id: 'botlek', name: 'Botlekbrug', refDvh: 14.00, loc: 'spijk' },
-            { id: 'hams', name: 'Hamsenbrug', refDvh: 11.45, loc: 'hoek' },
-            { id: 'suur', name: 'Suurhuffbrug', refDvh: 11.50, loc: 'hoek' },
-            { id: 'will', name: 'Willemsbrug', refDvh: 11.50, loc: 'rot' },
-            { id: 'eras', name: 'Erasmusbrug', refDvh: 12.50, loc: 'rot' }
-        ];
-
-        // LOGIC
-        function init() {
-            renderWS(wsDE, 'ws-de');
-            renderWS(wsNL, 'ws-nl');
-            renderBR(brDE, wsDE, 'br-de');
-            renderBR(brNL, wsNL, 'br-nl');
-            
-            const savedHeight = localStorage.getItem('shipHeight') || 4.00;
-            document.getElementById('ship-height').value = savedHeight;
-            
-            update();
+        function saveAll() {
+            const shipHeight = document.getElementById('global-ship-height').value;
+            const values = {};
+            document.querySelectorAll('input[data-ws-id]').forEach(input => {
+                values[input.dataset.wsId] = input.value;
+            });
+            localStorage.setItem('monitor_shipHeight', shipHeight);
+            localStorage.setItem('monitor_wsValues', JSON.stringify(values));
         }
 
-        function renderWS(data, targetId) {
-            const container = document.getElementById(targetId);
-            data.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'waterstand-item flex items-center justify-between p-2 rounded-lg';
-                div.innerHTML = `
-                    <span class="text-xs font-medium">${item.name}</span>
-                    <input type="number" value="${(item.currentLevel * 100).toFixed(0)}" 
-                           class="w-16 p-1 text-right text-xs font-bold" 
-                           oninput="updateWS('${item.id}', this.value)">
-                `;
-                container.appendChild(div);
+        function loadAll() {
+            const shipHeight = localStorage.getItem('monitor_shipHeight') || 4.00;
+            const wsValues = JSON.parse(localStorage.getItem('monitor_wsValues') || '{}');
+            
+            document.getElementById('global-ship-height').value = shipHeight;
+            
+            // Update data objects with saved values
+            [data.de.ws, data.nl.ws].flat().forEach(ws => {
+                if(wsValues[ws.id]) ws.val = wsValues[ws.id];
             });
         }
 
-        function renderBR(bridges, wstand, targetId) {
+        function render() {
+            renderWSList(data.de.ws, 'ws-list-de');
+            renderWSList(data.nl.ws, 'ws-list-nl');
+            renderBRList(data.de.br, data.de.ws, 'br-list-de');
+            renderBRList(data.nl.br, data.nl.ws, 'br-list-nl');
+            updateCalculations();
+        }
+
+        function renderWSList(wsArray, targetId) {
             const container = document.getElementById(targetId);
-            bridges.forEach(b => {
-                const div = document.createElement('div');
-                div.className = 'bridge-card glass-panel p-4 flex items-center justify-between';
-                div.innerHTML = `
-                    <div>
-                        <h4 class="font-bold text-sm">${b.name}</h4>
-                        <p class="text-[9px] text-white/40 uppercase tracking-widest">${wstand.find(w=>w.id===b.loc).name}</p>
-                    </div>
-                    <div class="flex gap-6">
-                        <div class="text-right">
-                            <span class="block text-[9px] text-white/40 uppercase">Doorvaart</span>
-                            <span id="dvh-${b.id}" class="font-bold text-sm">--</span>
+            container.innerHTML = wsArray.map(ws => `
+                <div class="flex items-center justify-between p-2 rounded-lg bg-white/5">
+                    <span class="text-sm font-semibold">${ws.name}</span>
+                    <input type="number" data-ws-id="${ws.id}" value="${ws.val}" 
+                           class="w-16 text-right font-bold text-sky-400" 
+                           oninput="updateVal('${ws.id}', this.value)">
+                </div>
+            `).join('');
+        }
+
+        function renderBRList(brArray, wsArray, targetId) {
+            const container = document.getElementById(targetId);
+            container.innerHTML = brArray.map(br => {
+                const ws = wsArray.find(w => w.id === br.loc);
+                return `
+                    <div class="glass-panel p-4 flex items-center justify-between border-l-4 border-l-sky-500">
+                        <div>
+                            <h4 class="font-bold text-sm text-white">${br.name}</h4>
+                            <p class="text-[9px] text-white/40 uppercase tracking-widest">${ws.name}</p>
                         </div>
-                        <div id="marge-${b.id}" class="marge-badge status-ok">--</div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span id="dvh-${br.id}" class="text-xs font-mono text-white/60">--</span>
+                            <div id="marge-${br.id}" class="marge-badge status-ok text-xs">--</div>
+                        </div>
                     </div>
                 `;
-                container.appendChild(div);
+            }).join('');
+        }
+
+        function updateVal(id, val) {
+            [data.de.ws, data.nl.ws].flat().find(w => w.id === id).val = val;
+            saveAll();
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            const shipHeight = parseFloat(document.getElementById('global-ship-height').value) || 0;
+            const allBridges = [...data.de.br, ...data.nl.br];
+            const allWS = [...data.de.ws, ...data.nl.ws];
+
+            allBridges.forEach(br => {
+                const ws = allWS.find(w => w.id === br.loc);
+                const currentDvh = br.ref - (ws.val / 100);
+                const marge = currentDvh - shipHeight;
+
+                const dvhEl = document.getElementById(`dvh-${br.id}`);
+                const margeEl = document.getElementById(`marge-${br.id}`);
+
+                if(dvhEl) dvhEl.innerText = `DVH: ${currentDvh.toFixed(2)}m`;
+                if(margeEl) {
+                    margeEl.innerText = `${marge.toFixed(2)}m`;
+                    margeEl.className = 'marge-badge ' + (marge < 0 ? 'status-danger' : marge < 0.5 ? 'status-warn' : 'status-ok');
+                }
             });
-        }
 
-        function updateWS(id, val) {
-            const item = [...wsDE, ...wsNL].find(w => w.id === id);
-            if(item) item.currentLevel = val / 100;
-            update();
-        }
-
-        function update() {
-            const shipHeight = parseFloat(document.getElementById('ship-height').value);
-            localStorage.setItem('shipHeight', shipHeight);
+            // Marke Alarms
             const alarms = [];
-
-            [...brDE, ...brNL].forEach(b => {
-                const ws = [...wsDE, ...wsNL].find(w => w.id === b.loc);
-                const dvh = b.refDvh - ws.currentLevel;
-                const marge = dvh - shipHeight;
-
-                document.getElementById(`dvh-${b.id}`).innerText = dvh.toFixed(2) + 'm';
-                const mBadge = document.getElementById(`marge-${b.id}`);
-                mBadge.innerText = marge.toFixed(2) + 'm';
-                
-                mBadge.className = 'marge-badge ' + (marge < 0 ? 'status-danger' : marge < 0.5 ? 'status-warn' : 'status-ok');
+            data.de.ws.forEach(w => {
+                if(w.val >= w.m2) alarms.push(`<div class="p-3 status-danger rounded-lg mb-2 font-bold text-center">🚨 ${w.name.toUpperCase()}: MARKE II OVERSCHREDEN</div>`);
+                else if(w.val >= w.m1) alarms.push(`<div class="p-3 status-warn rounded-lg mb-2 font-bold text-center">⚠️ ${w.name.toUpperCase()}: MARKE I OVERSCHREDEN</div>`);
             });
-
-            // Marke Alarms (Duitsland)
-            wsDE.forEach(w => {
-                const levelCm = w.currentLevel * 100;
-                if(levelCm >= w.markeII) alarms.push(`<div class="p-2 bg-red-500/20 text-red-400 rounded">🚨 ${w.name}: MARKE II!</div>`);
-                else if(levelCm >= w.markeI) alarms.push(`<div class="p-2 bg-orange-500/20 text-orange-400 rounded">⚠️ ${w.name}: MARKE I</div>`);
-            });
-            document.getElementById('alarms').innerHTML = alarms.length ? alarms.join('') : '<p class="text-white/20 italic text-center">Geen alarmen</p>';
+            document.getElementById('alarm-container').innerHTML = alarms.join('');
         }
 
-        document.getElementById('ship-height').oninput = update;
-        document.getElementById('menu-toggle').onclick = () => document.getElementById('menu-panel').classList.toggle('hidden');
+        document.getElementById('global-ship-height').oninput = () => {
+            saveAll();
+            updateCalculations();
+        };
 
-        init();
+        // Start
+        loadAll();
+        render();
     </script>
 </body>
 </html>
